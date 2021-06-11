@@ -4,32 +4,32 @@
 <h1 id="specyfikacja">Specyfikacja</h1>
 <p>Rozważmy system, w którym działa pewna (nieznana) liczba wątków. Wątki operują na ustalonej kolekcji zasobów (obiekty klas dziedziczących po klasie <code>cp1.base.Resource</code> z załączonego szablonu), z których każdy ma stały, unikalny identyfikator (<code>cp1.base.ResourceId</code>). W wyniku takich operacji (reprezentowanych przez dowolne obiekty implementujące interfejs <code>cp1.base.ResourceOperation</code>) kolekcja zasobów się nie zmienia, za to może się zmieniać stan poszczególnych zasobów.</p>
 <p>Operacje na zasobach wykonywane są w ramach transakcji. W dowolnym momencie czasu, dany wątek może wykonywać co najwyżej jedną transakcję. Transakcje są koordynowane przez menedżera transakcji (implementującego poniższy interfejs <code>cp1.base.TransactionManager</code>):</p>
-<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">interface</span> TransactionManager {
+<pre><code>public interface TransactionManager {
 
-    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">startTransaction</span>(
-    ) <span class="kw">throws</span>
+    public void startTransaction(
+    ) throws
         AnotherTransactionActiveException;
 
-    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">operateOnResourceInCurrentTransaction</span>(
+    public void operateOnResourceInCurrentTransaction (
             ResourceId rid,
             ResourceOperation operation
-    ) <span class="kw">throws</span>
+    ) throws
         NoActiveTransactionException,
         UnknownResourceIdException,
         ActiveTransactionAborted,
         ResourceOperationException,
         InterruptedException;
 
-    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">commitCurrentTransaction</span>(
-    ) <span class="kw">throws</span>
+    public void commitCurrentTransaction (
+    ) throws
         NoActiveTransactionException,
         ActiveTransactionAborted;
 
-    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">rollbackCurrentTransaction</span>();
+    public void rollbackCurrentTransaction();
 
-    <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">isTransactionActive</span>();
+    public boolean isTransactionActive();
 
-    <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">isTransactionAborted</span>();
+    public boolean isTransactionAborted();
 }</code></pre>
 <p>Podczas tworzenia (metoda <code>newTM</code> klasy <code>cp1.solution.TransactionManagerFactory</code>) menedżer transakcji otrzymuje kolekcję zasobów, które przechodzą pod jego wyłączną kontrolę, oraz interfejs do pytania o aktualny czas, który jest potrzebny przy zarządzaniu transakcjami.</p>
 <h2 id="rozpoczynanie-transakcji">Rozpoczynanie transakcji</h2>
